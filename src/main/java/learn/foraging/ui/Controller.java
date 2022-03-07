@@ -90,8 +90,8 @@ public class Controller {
 
     private void viewForagers() throws DataException {
         view.displayHeader(MainMenuOption.VIEW_FORAGERS.getMessage());
-        String lastNamePrefix = view.getForagerNamePrefix();
-        List<Forager> foragers = foragerService.findByLastName(lastNamePrefix);
+        String state = view.getState();
+        List<Forager> foragers = foragerService.findByState(state);
         view.printForagers(foragers);
         view.enterToContinue();
     }

@@ -1,5 +1,9 @@
 package learn.foraging.models;
 
+/**A person who searches for and harvests wild plants and fungi. Sustainable Foraging tracks a forager's first name,
+    last name, and state.
+ *
+ */
 public class Forager {
 
     private String id;
@@ -11,9 +15,7 @@ public class Forager {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    public void setId(String id) {this.id = id;}
 
     public String getFirstName() {
         return firstName;

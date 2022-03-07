@@ -4,15 +4,11 @@ import learn.foraging.data.DataException;
 import learn.foraging.data.ForageRepository;
 import learn.foraging.data.ForagerRepository;
 import learn.foraging.data.ItemRepository;
-import learn.foraging.models.Forage;
-import learn.foraging.models.Forager;
-import learn.foraging.models.Item;
+import learn.foraging.models.*;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ForageService {
@@ -43,10 +39,51 @@ public class ForageService {
         return result;
     }
 
+    public List<CategoryValue> categoryValueReport(LocalDate date) {
+        List<Forage> forages = findByDate(date);
+        List<CategoryValue> rows = new ArrayList<>();
+        forages.stream().forEach(f -> processCategories(f, rows));
+        return rows;
+    }
+
+    private void processCategories(Forage f, List<CategoryValue> rows) {
+        try {
+            rows.stream().filter(r -> r.getCategory() == f.getItem().getCategory())
+                    .findFirst().get().addValue(f.getValue());
+        } catch(RuntimeException e) {
+            rows.add(new CategoryValue(f.getItem().getCategory(), f.getValue()));
+        }
+    }
+
+    public List<ItemKilo> itemKiloReport(LocalDate date) {
+        List<Forage> forages = findByDate(date);
+        List<ItemKilo> rows = new ArrayList<>();
+        forages.stream().forEach(f -> processKilos(f, rows));
+        return rows;
+    }
+
+    private void processKilos(Forage f, List<ItemKilo> rows) {
+        try {
+            rows.stream().filter(r -> r.getItem().getId() == f.getItem().getId())
+                    .findFirst().get().addKilograms(f.getKilograms());
+        } catch(RuntimeException e) {
+            rows.add(new ItemKilo(f.getItem(), f.getKilograms()));
+        }
+    }
+
     public Result<Forage> add(Forage forage) throws DataException {
         Result<Forage> result = validate(forage);
         if (!result.isSuccess()) {
             return result;
+        }
+
+        if(duplicateForage(forage)) {
+            Forage existing = findByDate(forage.getDate()).stream().filter(
+                    i -> i.getForager().getId().equals(forage.getForager().getId()) &&
+                            i.getItem().getId() == forage.getItem().getId())
+                    .findFirst().get();
+            forage.setId(existing.getId());
+            forageRepository.update(forage);
         }
 
         result.setPayload(forageRepository.add(forage));
@@ -144,5 +181,11 @@ public class ForageService {
         if (itemRepository.findById(forage.getItem().getId()) == null) {
             result.addErrorMessage("Item does not exist.");
         }
+    }
+
+    private boolean duplicateForage(Forage forage) {
+        return findByDate(forage.getDate()).stream()
+                .anyMatch(i -> i.getForager().getId().equals(forage.getForager().getId()) &&
+                        i.getItem().getId() == forage.getItem().getId());
     }
 }

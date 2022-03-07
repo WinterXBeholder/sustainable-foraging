@@ -10,6 +10,7 @@ import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -34,6 +35,23 @@ class ForageServiceTest {
         assertTrue(result.isSuccess());
         assertNotNull(result.getPayload());
         assertEquals(36, result.getPayload().getId().length());
+    }
+
+    @Test
+    void shouldUpdateExistingForage() throws DataException {
+        Forage forage = new Forage();
+        forage.setDate(LocalDate.of(2022, 01, 01));
+        forage.setForager(ForagerRepositoryDouble.FORAGER);
+        forage.setItem(ItemRepositoryDouble.ITEM);
+        forage.setKilograms(0.5);
+
+        Result<Forage> result = service.add(forage);
+        assertEquals(0.5, result.getPayload().getKilograms());
+        forage.setKilograms(1);
+        result = service.add(forage);
+        assertTrue(result.isSuccess());
+        assertNotNull(result.getPayload());
+        assertEquals(1, result.getPayload().getKilograms());
     }
 
     @Test

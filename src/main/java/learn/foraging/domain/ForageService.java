@@ -7,12 +7,11 @@ import learn.foraging.data.ItemRepository;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import learn.foraging.models.ItemKilo;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ForageService {
@@ -41,6 +40,22 @@ public class ForageService {
         }
 
         return result;
+    }
+
+    public List<ItemKilo> itemKiloReport(LocalDate date) {
+        List<Forage> forages = findByDate(date);
+        List<ItemKilo> rows = new ArrayList<>();
+        forages.stream().forEach(f -> processKilos(f, rows));
+        return rows;
+    }
+
+    private void processKilos(Forage f, List<ItemKilo> rows) {
+        try {
+            rows.stream().filter(r -> r.getItem().getId() == f.getItem().getId())
+                    .findFirst().get().addKilograms(f.getKilograms());
+        } catch(RuntimeException e) {
+            rows.add(new ItemKilo(f.getItem(), f.getKilograms()));
+        }
     }
 
     public Result<Forage> add(Forage forage) throws DataException {

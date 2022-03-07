@@ -5,10 +5,7 @@ import learn.foraging.domain.ForageService;
 import learn.foraging.domain.ForagerService;
 import learn.foraging.domain.ItemService;
 import learn.foraging.domain.Result;
-import learn.foraging.models.Category;
-import learn.foraging.models.Forage;
-import learn.foraging.models.Forager;
-import learn.foraging.models.Item;
+import learn.foraging.models.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -61,8 +58,7 @@ public class Controller {
                     addItem();
                     break;
                 case REPORT_KG_PER_ITEM:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    kilogramReport();
                     break;
                 case REPORT_CATEGORY_VALUE:
                     view.displayStatus(false, "NOT IMPLEMENTED");
@@ -77,6 +73,7 @@ public class Controller {
 
     // top level menu
     private void viewByDate() {
+        view.displayHeader(MainMenuOption.VIEW_FORAGES_BY_DATE.getMessage());
         LocalDate date = view.getForageDate();
         List<Forage> forages = forageService.findByDate(date);
         view.displayForages(forages);
@@ -97,6 +94,14 @@ public class Controller {
         String lastNamePrefix = view.getForagerNamePrefix();
         List<Forager> foragers = foragerService.findByLastName(lastNamePrefix);
         view.printForagers(foragers);
+        view.enterToContinue();
+    }
+
+    private void kilogramReport() {
+        view.displayHeader(MainMenuOption.REPORT_KG_PER_ITEM.getMessage());
+        LocalDate date = view.getForageDate();
+        List<ItemKilo> rows = forageService.itemKiloReport(date);
+        view.printItemKiloReport(rows);
         view.enterToContinue();
     }
 
@@ -162,4 +167,5 @@ public class Controller {
         List<Item> items = itemService.findByCategory(category);
         return view.chooseItem(items);
     }
+
 }

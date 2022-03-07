@@ -1,9 +1,6 @@
 package learn.foraging.ui;
 
-import learn.foraging.models.Category;
-import learn.foraging.models.Forage;
-import learn.foraging.models.Forager;
-import learn.foraging.models.Item;
+import learn.foraging.models.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,7 +32,6 @@ public class View {
     }
 
     public LocalDate getForageDate() {
-        displayHeader(MainMenuOption.VIEW_FORAGES_BY_DATE.getMessage());
         return io.readLocalDate("Select a date [MM/dd/yyyy]: ");
     }
 
@@ -206,6 +202,20 @@ public class View {
             );
         }
     }
+
+    public void printItemKiloReport(List<ItemKilo> rows) {
+        if (rows == null || rows.isEmpty()) {
+            io.println("No items found.");
+            return;
+        }
+        for (ItemKilo row : rows) {
+            io.printf("%s: %.2f kilograms%n",
+                    row.getItem().getName(),
+                    row.getKilograms()
+            );
+        }
+    }
+
 
     public void displayItems(List<Item> items) {
 

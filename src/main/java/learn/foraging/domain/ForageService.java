@@ -83,10 +83,12 @@ public class ForageService {
                             i.getItem().getId() == forage.getItem().getId())
                     .findFirst().get();
             forage.setId(existing.getId());
-            forageRepository.update(forage);
+            if(forageRepository.update(forage)) {
+                result.setPayload(forage);
+            }
+        } else {
+            result.setPayload(forageRepository.add(forage));
         }
-
-        result.setPayload(forageRepository.add(forage));
 
         return result;
     }

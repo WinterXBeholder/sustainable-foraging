@@ -11,7 +11,7 @@ public class ForageRepositoryDouble implements ForageRepository {
 
     final LocalDate date = LocalDate.of(2020, 6, 26);
 
-    private final ArrayList<Forage> forages = new ArrayList<>();
+    private ArrayList<Forage> forages = new ArrayList<>();
 
     public ForageRepositoryDouble() {
         Forage forage = new Forage();
@@ -39,6 +39,14 @@ public class ForageRepositoryDouble implements ForageRepository {
 
     @Override
     public boolean update(Forage forage) throws DataException {
+        List<Forage> all = findByDate(forage.getDate());
+        for (int i = 0; i < all.size(); i++) {
+            if (all.get(i).getId().equals(forage.getId())) {
+                all.set(i, forage);
+                forages = new ArrayList<>(all);
+                return true;
+            }
+        }
         return false;
     }
 }

@@ -8,25 +8,34 @@ import learn.foraging.models.Category;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ForageServiceTest {
 
-    ForageService service = new ForageService(
-            new ForageRepositoryDouble(),
-            new ForagerRepositoryDouble(),
-            new ItemRepositoryDouble());
+
+    ForageService service;
+
+    @BeforeEach
+    void setup() {
+        service = new ForageService(
+                new ForageRepositoryDouble(),
+                new ForagerRepositoryDouble(),
+                new ItemRepositoryDouble());
+    }
 
     @Test
     void shouldAdd() throws DataException {
         Forage forage = new Forage();
-        forage.setDate(LocalDate.now());
+        LocalDate date = LocalDate.now();
+        forage.setDate(date);
         forage.setForager(ForagerRepositoryDouble.FORAGER);
         forage.setItem(ItemRepositoryDouble.ITEM);
         forage.setKilograms(0.5);
@@ -35,20 +44,32 @@ class ForageServiceTest {
         assertTrue(result.isSuccess());
         assertNotNull(result.getPayload());
         assertEquals(36, result.getPayload().getId().length());
+        assertEquals(1, service.findByDate(date).size());
     }
 
     @Test
     void shouldUpdateExistingForage() throws DataException {
+        LocalDate date = LocalDate.of(2022, 01, 01);
         Forage forage = new Forage();
-        forage.setDate(LocalDate.of(2022, 01, 01));
+        forage.setDate(date);
         forage.setForager(ForagerRepositoryDouble.FORAGER);
         forage.setItem(ItemRepositoryDouble.ITEM);
         forage.setKilograms(0.5);
 
+        List<Forage> forages = service.findByDate(date);
+        assertEquals(0, forages.size());
+
         Result<Forage> result = service.add(forage);
-        assertEquals(0.5, result.getPayload().getKilograms());
+        forages = service.findByDate(date);
+        assertEquals(1, forages.size());
+        assertEquals(0.5, forages.get(0).getKilograms());
+
         forage.setKilograms(1);
         result = service.add(forage);
+        forages = service.findByDate(date);
+        assertEquals(1, forages.size());
+        assertEquals(1, forages.get(0).getKilograms());
+
         assertTrue(result.isSuccess());
         assertNotNull(result.getPayload());
         assertEquals(1, result.getPayload().getKilograms());

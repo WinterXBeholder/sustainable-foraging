@@ -49,6 +49,15 @@ public class ForageService {
             return result;
         }
 
+        if(duplicateForage(forage)) {
+            Forage existing = findByDate(forage.getDate()).stream().filter(
+                    i -> i.getForager().getId().equals(forage.getForager().getId()) &&
+                            i.getItem().getId() == forage.getItem().getId())
+                    .findFirst().get();
+            forage.setId(existing.getId());
+            forageRepository.update(forage);
+        }
+
         result.setPayload(forageRepository.add(forage));
 
         return result;
@@ -144,5 +153,11 @@ public class ForageService {
         if (itemRepository.findById(forage.getItem().getId()) == null) {
             result.addErrorMessage("Item does not exist.");
         }
+    }
+
+    private boolean duplicateForage(Forage forage) {
+        return findByDate(forage.getDate()).stream()
+                .anyMatch(i -> i.getForager().getId().equals(forage.getForager().getId()) &&
+                        i.getItem().getId() == forage.getItem().getId());
     }
 }

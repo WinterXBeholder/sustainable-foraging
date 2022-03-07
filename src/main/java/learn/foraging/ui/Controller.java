@@ -61,8 +61,7 @@ public class Controller {
                     kilogramReport();
                     break;
                 case REPORT_CATEGORY_VALUE:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    valueReport();
                     break;
                 case GENERATE:
                     generate();
@@ -102,6 +101,14 @@ public class Controller {
         LocalDate date = view.getForageDate();
         List<ItemKilo> rows = forageService.itemKiloReport(date);
         view.printItemKiloReport(rows);
+        view.enterToContinue();
+    }
+
+    private void valueReport() {
+        view.displayHeader(MainMenuOption.REPORT_CATEGORY_VALUE.getMessage());
+        LocalDate date = view.getForageDate();
+        List<CategoryValue> rows = forageService.categoryValueReport(date);
+        view.printCategoryValueReport(rows);
         view.enterToContinue();
     }
 

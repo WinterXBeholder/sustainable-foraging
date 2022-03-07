@@ -4,10 +4,7 @@ import learn.foraging.data.DataException;
 import learn.foraging.data.ForageRepository;
 import learn.foraging.data.ForagerRepository;
 import learn.foraging.data.ItemRepository;
-import learn.foraging.models.Forage;
-import learn.foraging.models.Forager;
-import learn.foraging.models.Item;
-import learn.foraging.models.ItemKilo;
+import learn.foraging.models.*;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
@@ -40,6 +37,22 @@ public class ForageService {
         }
 
         return result;
+    }
+
+    public List<CategoryValue> categoryValueReport(LocalDate date) {
+        List<Forage> forages = findByDate(date);
+        List<CategoryValue> rows = new ArrayList<>();
+        forages.stream().forEach(f -> processCategories(f, rows));
+        return rows;
+    }
+
+    private void processCategories(Forage f, List<CategoryValue> rows) {
+        try {
+            rows.stream().filter(r -> r.getCategory() == f.getItem().getCategory())
+                    .findFirst().get().addValue(f.getValue());
+        } catch(RuntimeException e) {
+            rows.add(new CategoryValue(f.getItem().getCategory(), f.getValue()));
+        }
     }
 
     public List<ItemKilo> itemKiloReport(LocalDate date) {

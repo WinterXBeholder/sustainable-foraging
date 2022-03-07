@@ -216,6 +216,18 @@ public class View {
         }
     }
 
+    public void printCategoryValueReport(List<CategoryValue> rows) {
+        if (rows == null || rows.isEmpty()) {
+            io.println("No items found.");
+            return;
+        }
+        for (CategoryValue row : rows) {
+            io.printf("%s: $%.2f total%n",
+                    row.getCategory(),
+                    row.getValue()
+            );
+        }
+    }
 
     public void displayItems(List<Item> items) {
 

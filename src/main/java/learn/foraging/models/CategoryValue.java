@@ -4,7 +4,12 @@ import java.math.BigDecimal;
 
 public class CategoryValue {
     private Category category;
-    private BigDecimal value;
+    private BigDecimal value = BigDecimal.ZERO;
+
+    public CategoryValue(Category category, BigDecimal value) {
+        this.category = category;
+        this.addValue(value);
+    }
 
     public Category getCategory() {
         return category;
@@ -14,9 +19,9 @@ public class CategoryValue {
         this.category = category;
     }
 
-    public BigDecimal getDollarPerKilogram() {
+    public BigDecimal getValue() {
         return value;
     }
 
-    public void addDollarPerKilogram(BigDecimal dollarPerKilogram) {this.value.add(dollarPerKilogram);}
+    public void addValue(BigDecimal value) {this.value = this.value.add(value);}
 }

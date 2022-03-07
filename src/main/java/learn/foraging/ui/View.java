@@ -43,6 +43,21 @@ public class View {
         return io.readRequiredString("Forager last name starts with: ");
     }
 
+    public void printForagers(List<Forager> foragers) {
+        if (foragers.size() == 0) {
+            io.println("No foragers found");
+        }
+
+        int index = 1;
+        for (Forager forager : foragers.stream().limit(25).collect(Collectors.toList())) {
+            io.printf("%s: %s %s%n", index++, forager.getFirstName(), forager.getLastName());
+        }
+
+        if (foragers.size() > 25) {
+            io.println("More than 25 foragers found. Showing first 25. Please refine your search.");
+        }
+    }
+
     public Forager chooseForager(List<Forager> foragers) {
         if (foragers.size() == 0) {
             io.println("No foragers found");
@@ -114,9 +129,18 @@ public class View {
         displayHeader(MainMenuOption.ADD_ITEM.getMessage());
         Item item = new Item();
         item.setCategory(getItemCategory());
-        item.setName(io.readRequiredString("Item Name: "));
+        item.setName(io.readPhrase("Item Name: "));
         item.setDollarPerKilogram(io.readBigDecimal("$/Kg: ", BigDecimal.ZERO, new BigDecimal("7500.00")));
         return item;
+    }
+
+    public Forager makeForager() {
+        displayHeader(MainMenuOption.ADD_FORAGER.getMessage());
+        Forager forager = new Forager();
+        forager.setFirstName(io.readWord("First Name: "));
+        forager.setLastName(io.readWord("Last Name: "));
+        forager.setState(io.readState("State of residence: "));
+        return forager;
     }
 
     public GenerateRequest getGenerateRequest() {

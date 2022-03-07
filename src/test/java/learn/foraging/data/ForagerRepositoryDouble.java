@@ -45,4 +45,7 @@ public class ForagerRepositoryDouble implements ForagerRepository {
         return forager;
     }
 
+    @Override
+    public Forager add(Forager forager) {return forager;}
+
 }

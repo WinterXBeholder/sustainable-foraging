@@ -14,6 +14,10 @@ public class ConsoleIO {
             = "[INVALID] Enter a number between %s and %s.";
     private static final String REQUIRED
             = "[INVALID] Value is required.";
+    private static final String INVALID_STRING
+            = "[INVALID] Value cannot contain punctuation or numbers.";
+    private static final String INVALID_STATE
+            = "[INVALID] State must be two letters.";
     private static final String INVALID_DATE
             = "[INVALID] Enter a date in MM/dd/yyyy format.";
 
@@ -44,6 +48,42 @@ public class ConsoleIO {
                 return result;
             }
             println(REQUIRED);
+        }
+    }
+
+    public String readPhrase(String prompt) {
+        boolean isWord = false;
+        while (true) {
+            String result = readRequiredString(prompt);
+            isWord = result.matches("[a-zA-Z ]+");
+            if (isWord) {
+                return result;
+            }
+            println(INVALID_STRING);
+        }
+    }
+
+    public String readWord(String prompt) {
+        boolean isWord = false;
+        while (true) {
+            String result = readRequiredString(prompt);
+            isWord = result.matches("[a-zA-Z]+");
+            if (isWord) {
+                return result;
+            }
+            println(INVALID_STRING);
+        }
+    }
+
+    public String readState(String prompt) {
+        boolean isState = false;
+        while (true) {
+            String result = readRequiredString(prompt);
+            isState = result.matches("[a-zA-Z]+") && result.length() == 2;
+            if (isState) {
+                return result;
+            }
+            println(INVALID_STRING);
         }
     }
 

@@ -1,5 +1,6 @@
 package learn.foraging.data;
 
+import learn.foraging.domain.Result;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
@@ -14,7 +15,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ForageFileRepositoryTest {
 
@@ -25,13 +26,14 @@ class ForageFileRepositoryTest {
 
     final LocalDate date = LocalDate.of(2020, 6, 26);
 
-    ForageFileRepository repository = new ForageFileRepository(TEST_DIR_PATH);
+    ForageFileRepository repository;
 
     @BeforeEach
     void setup() throws IOException {
         Path seedPath = Paths.get(SEED_FILE_PATH);
         Path testPath = Paths.get(TEST_FILE_PATH);
         Files.copy(seedPath, testPath, StandardCopyOption.REPLACE_EXISTING);
+        repository = new ForageFileRepository(TEST_DIR_PATH);
     }
 
     @Test
@@ -59,4 +61,70 @@ class ForageFileRepositoryTest {
         assertEquals(36, forage.getId().length());
     }
 
+    @Test
+    void shouldUpdate() throws DataException, IOException {
+        Path newSeedPath = Paths.get("./data/forage-update-seed-2022-01-01.csv");
+        Path newTestPath = Paths.get("./data/forage_data_test/2022-01-01.csv");
+        Files.copy(newSeedPath, newTestPath, StandardCopyOption.REPLACE_EXISTING);
+
+
+        LocalDate newDate = LocalDate.of(2022, 01, 01);
+        Forage forage = new Forage();
+        forage.setDate(newDate);
+        forage.setForager(ForagerRepositoryDouble.FORAGER);
+        forage.setItem(ItemRepositoryDouble.ITEM);
+        forage.setKilograms(0.5);
+
+        List<Forage> forages = repository.findByDate(newDate);
+        assertEquals(0, forages.size());
+
+        Forage result1 = repository.add(forage);
+        assertEquals(0.5, result1.getKilograms());
+        forages = repository.findByDate(newDate);
+        assertEquals(1, forages.size());
+
+        forage.setKilograms(1);
+        Boolean result2 = repository.update(forage);
+        forages = repository.findByDate(newDate);
+        assertEquals(1, forages.size());
+        assertTrue(result2);
+        assertEquals(1, forage.getKilograms());
+        assertEquals(1, forages.get(0).getKilograms());
+
+        boolean result = repository.update(forage);
+
+
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

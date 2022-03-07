@@ -59,6 +59,7 @@ public class ForageService {
         List<Forage> forages = findByDate(date);
         List<ItemKilo> rows = new ArrayList<>();
         forages.stream().forEach(f -> processKilos(f, rows));
+        rows.sort(Comparator.comparing(i -> i.getItem().getName()));
         return rows;
     }
 
@@ -83,10 +84,12 @@ public class ForageService {
                             i.getItem().getId() == forage.getItem().getId())
                     .findFirst().get();
             forage.setId(existing.getId());
-            forageRepository.update(forage);
+            if(forageRepository.update(forage)) {
+                result.setPayload(forage);
+            }
+        } else {
+            result.setPayload(forageRepository.add(forage));
         }
-
-        result.setPayload(forageRepository.add(forage));
 
         return result;
     }

@@ -3,7 +3,11 @@ package learn.foraging.models;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+/** A wild plant or fungi. Items have a name, an item category, and a price per Kg.
+ *
+ */
 public class Item {
+
 
     private int id;
     private String name;

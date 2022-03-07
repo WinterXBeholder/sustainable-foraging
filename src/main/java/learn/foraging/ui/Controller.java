@@ -5,10 +5,7 @@ import learn.foraging.domain.ForageService;
 import learn.foraging.domain.ForagerService;
 import learn.foraging.domain.ItemService;
 import learn.foraging.domain.Result;
-import learn.foraging.models.Category;
-import learn.foraging.models.Forage;
-import learn.foraging.models.Forager;
-import learn.foraging.models.Item;
+import learn.foraging.models.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,6 +42,9 @@ public class Controller {
                 case VIEW_FORAGES_BY_DATE:
                     viewByDate();
                     break;
+                case VIEW_FORAGERS:
+                    viewForagers();
+                    break;
                 case VIEW_ITEMS:
                     viewItems();
                     break;
@@ -52,19 +52,16 @@ public class Controller {
                     addForage();
                     break;
                 case ADD_FORAGER:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    addForager();
                     break;
                 case ADD_ITEM:
                     addItem();
                     break;
                 case REPORT_KG_PER_ITEM:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    kilogramReport();
                     break;
                 case REPORT_CATEGORY_VALUE:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    valueReport();
                     break;
                 case GENERATE:
                     generate();
@@ -75,6 +72,7 @@ public class Controller {
 
     // top level menu
     private void viewByDate() {
+        view.displayHeader(MainMenuOption.VIEW_FORAGES_BY_DATE.getMessage());
         LocalDate date = view.getForageDate();
         List<Forage> forages = forageService.findByDate(date);
         view.displayForages(forages);
@@ -87,6 +85,30 @@ public class Controller {
         List<Item> items = itemService.findByCategory(category);
         view.displayHeader("Items");
         view.displayItems(items);
+        view.enterToContinue();
+    }
+
+    private void viewForagers() throws DataException {
+        view.displayHeader(MainMenuOption.VIEW_FORAGERS.getMessage());
+        String state = view.getState();
+        List<Forager> foragers = foragerService.findByState(state);
+        view.printForagers(foragers);
+        view.enterToContinue();
+    }
+
+    private void kilogramReport() {
+        view.displayHeader(MainMenuOption.REPORT_KG_PER_ITEM.getMessage());
+        LocalDate date = view.getForageDate();
+        List<ItemKilo> rows = forageService.itemKiloReport(date);
+        view.printItemKiloReport(rows);
+        view.enterToContinue();
+    }
+
+    private void valueReport() {
+        view.displayHeader(MainMenuOption.REPORT_CATEGORY_VALUE.getMessage());
+        LocalDate date = view.getForageDate();
+        List<CategoryValue> rows = forageService.categoryValueReport(date);
+        view.printCategoryValueReport(rows);
         view.enterToContinue();
     }
 
@@ -121,6 +143,17 @@ public class Controller {
         }
     }
 
+    private void addForager() throws DataException {
+        Forager forager = view.makeForager();
+        Result<Forager> result = foragerService.add(forager);
+        if (!result.isSuccess()) {
+            view.displayStatus(false, result.getErrorMessages());
+        } else {
+            String successMessage = String.format("Forager %s created.", result.getPayload().getId());
+            view.displayStatus(true, successMessage);
+        }
+    }
+
     private void generate() throws DataException {
         GenerateRequest request = view.getGenerateRequest();
         if (request != null) {
@@ -141,4 +174,5 @@ public class Controller {
         List<Item> items = itemService.findByCategory(category);
         return view.chooseItem(items);
     }
+
 }

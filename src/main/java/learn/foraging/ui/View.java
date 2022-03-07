@@ -1,9 +1,6 @@
 package learn.foraging.ui;
 
-import learn.foraging.models.Category;
-import learn.foraging.models.Forage;
-import learn.foraging.models.Forager;
-import learn.foraging.models.Item;
+import learn.foraging.models.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,13 +31,27 @@ public class View {
         return MainMenuOption.fromValue(io.readInt(message, min, max));
     }
 
-    public LocalDate getForageDate() {
-        displayHeader(MainMenuOption.VIEW_FORAGES_BY_DATE.getMessage());
-        return io.readLocalDate("Select a date [MM/dd/yyyy]: ");
-    }
+    public LocalDate getForageDate() {return io.readLocalDate("Select a date [MM/dd/yyyy]: ");}
+
+    public String getState() {return io.readState("Enter a State abbreviation: ");}
 
     public String getForagerNamePrefix() {
         return io.readRequiredString("Forager last name starts with: ");
+    }
+
+    public void printForagers(List<Forager> foragers) {
+        if (foragers.size() == 0) {
+            io.println("No foragers found");
+        }
+
+        int index = 1;
+        for (Forager forager : foragers.stream().limit(25).collect(Collectors.toList())) {
+            io.printf("%s: %s %s%n", index++, forager.getFirstName(), forager.getLastName());
+        }
+
+        if (foragers.size() > 25) {
+            io.println("More than 25 foragers found. Showing first 25. Please refine your search.");
+        }
     }
 
     public Forager chooseForager(List<Forager> foragers) {
@@ -114,9 +125,18 @@ public class View {
         displayHeader(MainMenuOption.ADD_ITEM.getMessage());
         Item item = new Item();
         item.setCategory(getItemCategory());
-        item.setName(io.readRequiredString("Item Name: "));
+        item.setName(io.readPhrase("Item Name: "));
         item.setDollarPerKilogram(io.readBigDecimal("$/Kg: ", BigDecimal.ZERO, new BigDecimal("7500.00")));
         return item;
+    }
+
+    public Forager makeForager() {
+        displayHeader(MainMenuOption.ADD_FORAGER.getMessage());
+        Forager forager = new Forager();
+        forager.setFirstName(io.readWord("First Name: "));
+        forager.setLastName(io.readWord("Last Name: "));
+        forager.setState(io.readState("State of residence: "));
+        return forager;
     }
 
     public GenerateRequest getGenerateRequest() {
@@ -179,6 +199,32 @@ public class View {
                     forage.getItem().getName(),
                     forage.getItem().getCategory(),
                     forage.getValue()
+            );
+        }
+    }
+
+    public void printItemKiloReport(List<ItemKilo> rows) {
+        if (rows == null || rows.isEmpty()) {
+            io.println("No items found.");
+            return;
+        }
+        for (ItemKilo row : rows) {
+            io.printf("%s: %.2f kilograms%n",
+                    row.getItem().getName(),
+                    row.getKilograms()
+            );
+        }
+    }
+
+    public void printCategoryValueReport(List<CategoryValue> rows) {
+        if (rows == null || rows.isEmpty()) {
+            io.println("No items found.");
+            return;
+        }
+        for (CategoryValue row : rows) {
+            io.printf("%s: $%.2f total%n",
+                    row.getCategory(),
+                    row.getValue()
             );
         }
     }

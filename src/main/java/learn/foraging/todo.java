@@ -9,4 +9,6 @@ public class todo {
     //DONE: Create a report that displays the total value of each Category collected on one day.
     //DONE: handle duplicate forages
     //DONE: implement Spring
+    //DONE: correct $ validation
+    //DONE: view Foragers by state
 }

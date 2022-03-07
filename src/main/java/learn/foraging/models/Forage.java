@@ -4,6 +4,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
+/** A successful foraging venture linking a forager to the item they found. Forages have a date, a forager, an item,
+    and the kilograms collected. "Successful" here means that an item was found. That item could be worthless because
+    it's inedible or poisonous.
+ *
+ */
 public class Forage {
 
     private String id;

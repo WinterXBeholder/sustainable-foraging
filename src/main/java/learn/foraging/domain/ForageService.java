@@ -59,6 +59,7 @@ public class ForageService {
         List<Forage> forages = findByDate(date);
         List<ItemKilo> rows = new ArrayList<>();
         forages.stream().forEach(f -> processKilos(f, rows));
+        rows.sort(Comparator.comparing(i -> i.getItem().getName()));
         return rows;
     }
 

@@ -31,9 +31,9 @@ public class View {
         return MainMenuOption.fromValue(io.readInt(message, min, max));
     }
 
-    public LocalDate getForageDate() {
-        return io.readLocalDate("Select a date [MM/dd/yyyy]: ");
-    }
+    public LocalDate getForageDate() {return io.readLocalDate("Select a date [MM/dd/yyyy]: ");}
+
+    public String getState() {return io.readState("Enter a State abbreviation: ");}
 
     public String getForagerNamePrefix() {
         return io.readRequiredString("Forager last name starts with: ");

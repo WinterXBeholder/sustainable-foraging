@@ -31,6 +31,11 @@ public class ItemService {
             return result;
         }
 
+        if (!item.getName().matches("[a-zA-Z ]+")) {
+            result.addErrorMessage("Item name must not contain punctuation or numbers");
+            return result;
+        }
+
         if (item.getName() == null || item.getName().isBlank()) {
             result.addErrorMessage("Item name is required.");
         } else if (repository.findAll().stream()
